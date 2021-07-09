@@ -1,0 +1,30 @@
+{
+	"compilerOptions": {
+		// Basic Options
+		"target": "es2019",
+		"module": "commonjs",
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"removeComments": true,
+
+		// Strict Type-Checking Options
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+
+		// Additional Checks
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
+		// Module Resolution Options
+		"baseUrl": "./",
+		"esModuleInterop": true,
+
+		// Advanced Options
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true
+	},
+	"exclude": ["./node_modules"],
+	"include": ["./src/**/*.ts"]
+}
