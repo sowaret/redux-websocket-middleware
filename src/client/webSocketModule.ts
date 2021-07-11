@@ -8,7 +8,7 @@ import createActions from './actions';
 
 interface BuildWebSocketModuleParameters {
 	definitions: UserDefinitions
-	otherReducers: BareReducers
+	otherReducers?: BareReducers
 	prefix: string
 };
 export = ({
@@ -30,8 +30,10 @@ export = ({
 		responseReducers[reducerName || action] = reducer;
 	}
 	
-	for (const [reducerName, reducer] of Object.entries(otherReducers))
-		responseReducers[reducerName] = reducer;
+	if (otherReducers) {
+		for (const [reducerName, reducer] of Object.entries(otherReducers))
+			responseReducers[reducerName] = reducer;
+	}
 
 	return { actions, actionEnumList, responseReducers };
 };

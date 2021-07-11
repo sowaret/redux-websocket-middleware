@@ -2,6 +2,7 @@ import WebSocket from 'ws';
 import {
 	ClientData,
 	ClientDataNoType,
+	CancelDispatchFunction,
 	OnCloseFunction,
 	UserClass,
 	UserController,
@@ -12,16 +13,21 @@ import {
 import { generateClientId, send } from './utils';
 
 interface DispatchActionParameters extends WebSocketClientAndClassInstance {
+	cancelDispatch: CancelDispatchFunction
 	controller: UserController
 	data: ClientDataNoType
+	type: string
 };
 const dispatchAction = async ({
+	cancelDispatch,
 	client,
 	controller,
 	data,
+	type,
 	wsClassInstance,
 	wsClassParamName,
 }: DispatchActionParameters) => {
+	if (cancelDispatch({ client, type })) return;
 	try {
 		await controller.try({
 			client,
@@ -34,10 +40,12 @@ const dispatchAction = async ({
 };
 
 interface ConnectClientParameters extends WebSocketClientAndClassInstance {
+	cancelDispatch: CancelDispatchFunction,
 	controllers: UserControllers
 	onClose: OnCloseFunction
 };
 const connectClient = ({
+	cancelDispatch,
 	client,
 	controllers,
 	onClose,
@@ -47,6 +55,7 @@ const connectClient = ({
 	client.id = generateClientId();
 	client.isAlive = true;
 	configureClient({
+		cancelDispatch,
 		client,
 		controllers,
 		onClose,
@@ -59,6 +68,7 @@ const connectClient = ({
 };
 
 const configureClient = ({
+	cancelDispatch,
 	client,
 	controllers,
 	onClose,
@@ -72,9 +82,11 @@ const configureClient = ({
 		const { type, ...payload } = data;
 		if (type in controllers)
 			await dispatchAction({
+				cancelDispatch,
 				client,
 				controller: controllers[type],
 				data: payload,
+				type,
 				wsClassInstance,
 				wsClassParamName,
 			});
@@ -96,6 +108,7 @@ const createClientPingInterval = (wsServer: WebSocket.Server) => setInterval(_ =
 }, 30000);
 
 interface CreateWebSocketServerParameters {
+	cancelDispatch: CancelDispatchFunction
 	controllers: UserControllers
 	onClose: OnCloseFunction
 	port: number
@@ -103,6 +116,7 @@ interface CreateWebSocketServerParameters {
 	wsClassParamName: string
 };
 export = ({
+	cancelDispatch = () => {},
 	controllers,
 	onClose = () => {},
 	port = 8080,
@@ -114,6 +128,7 @@ export = ({
 	const wsClassInstance = new wsClass();
 	wsServer.on('connection', (client: WebSocketClient) =>
 		connectClient({
+			cancelDispatch,
 			client,
 			controllers,
 			onClose,

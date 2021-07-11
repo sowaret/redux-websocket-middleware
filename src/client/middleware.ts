@@ -1,6 +1,7 @@
 import {
 	FixType,
 	ReducerFunctions,
+	ReducerResponseCallbackParameters,
 	UserDefinedReducerResponse,
 } from 'types/client';
 import { AnyAction, Dispatch, Store } from 'redux';
@@ -10,7 +11,7 @@ const { actions } = createActions();
 interface CreateSocketMiddlewareParameters {
 	actionEnumList: string[]
 	dispatchOnClose: boolean
-	onReducerResponse: (res: UserDefinedReducerResponse) => void
+	onReducerResponse: (params: ReducerResponseCallbackParameters) => void
 	onSocketOpen: (store: Store) => void
 	responseReducers: ReducerFunctions
 };
@@ -40,7 +41,7 @@ export = ({
 		if (type in responseReducers) {
 			const res: UserDefinedReducerResponse =
 				responseReducers[type]({ dispatch, payload });
-			onReducerResponse(res);
+			onReducerResponse({ dispatch, res, type });
 		}
 	};
 

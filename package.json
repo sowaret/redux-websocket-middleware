@@ -1,6 +1,6 @@
 {
 	"name": "@sowaret/redux-websocket-middleware",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"description": "WebSocket server middleware for Redux",
 	"author": "Sowaret <atomsowaret@gmail.com>",
 	"license": "ISC",
@@ -10,7 +10,7 @@
 		"dist/"
 	],
 	"scripts": {
-		"build": "rm -r ./dist && tsc"
+		"build": "rm -rf ./dist && tsc"
 	},
 	"keywords": [
 		"redux",

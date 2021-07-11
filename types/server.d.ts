@@ -18,6 +18,7 @@ interface ControllerActionErrorParameters {
 	error: Error
 };
 
+type CancelDispatchFunction = ({ client: WebSocketClient, type: string }) => any;
 type OnCloseFunction = (client: WebSocketClient) => void;
 
 type UserClass = new (...args: any[]) => void;

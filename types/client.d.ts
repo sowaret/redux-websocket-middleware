@@ -19,6 +19,11 @@ interface BareReducers {
 }
 
 type UserDefinedReducerResponse = any;
+interface ReducerResponseCallbackParameters {
+	dispatch: Dispatch
+	res: UserDefinedReducerResponse
+	type: string
+};
 
 //
 // WebSocket and user-defined action definitions

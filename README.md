@@ -99,22 +99,26 @@ import {
 export default createSocketMiddleware({
     actionEnumList,
     responseReducers,
+    // Optional callback to execute containing any response from each reducer
+    onReducerResponse({ dispatch, res, type }) => { /* ... */ },
     // Optional callback to execute when a connection is established
-    // onSocketOpen: store => { ... },
+    onSocketOpen: store => { /* ... */ },
 });
 ```
 
 
-### Implement the middleware in the Redux store
+### Implement the middleware in the Redux store:
 
 #### `store.js`
 ```js
 import { applyMiddleware, createStore } from 'redux';
 import webSocketMiddleware from './websocket/middleware';
 
+// ...
+
 export default createStore(
-    // reducer,
-    // initialState,
+    reducer,
+    initialState,
     applyMiddleware(webSocketMiddleware)
 );
 ```
@@ -129,7 +133,7 @@ Controller names should correspond to the action names in `client/websocket/acti
 #### `websocket/controllers.js`
 ```js
 export const CONTROLLER_NAME = {
-    try: async ({ Main, client, data }) => {
+    try: async ({ client, data, Main }) => {
         // Pass data and client to a method on the Main class instance,
         // send message to client,
         // etc.
@@ -137,8 +141,8 @@ export const CONTROLLER_NAME = {
     catch: async ({ client, error }) => {
         // Handle error; send message to client, etc.
     },
-    // ...
 };
+// ...
 ```
 
 
@@ -153,9 +157,12 @@ import controllers from './websocket/controllers';
 import MainClass from './websocket/classes';
 
 createWebSocketServer({
+    // Optional function to execute before dispatching each action
+    // If this function returns `true`, the action will not be dispatched
+    cancelDispatch: ({ client, type }) => { /* ... */ },
     controllers,
     // Optional callback to execute when a connection is closed
-    // onClose: client => { ... },
+    onClose: client => { /* ... */ },
     port: 8080, // default
     wsClass: MainClass,
     // Parameter name to use when passing the class instance to your actions
@@ -171,6 +178,7 @@ Action function names are generated as CamelCase versions of the enums in `actio
 
 ```js
 import { wsActionName, wsAnotherAction } from './websocket/module';
+// ...
 dispatch(wsActionName({ id, name }));
 dispatch(wsAnotherAction(id));
 ```
